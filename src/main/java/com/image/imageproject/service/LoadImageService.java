@@ -3,6 +3,7 @@ package com.image.imageproject.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.image.imageproject.data.ThirdPartyDto;
+import com.image.imageproject.utils.SSLUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,24 +14,36 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class LoadImageService {
     private static final Logger LOG = LoggerFactory.getLogger(LoadImageService.class);
-    private static final String URL = "http://5ad8d1c9dc1baa0014c60c51.mockapi.io/api/br/v1/magic";
+    private static final String URL = "https://5ad8d1c9dc1baa0014c60c51.mockapi.io/api/br/v1/magic";
     private static final String TOTAL_URL = "http://5ad8d1c9dc1baa0014c60c51.mockapi.io/api/br/v1/magicall";
 
     private RestTemplate restTemplate = new RestTemplate();
 
+    public LoadImageService(){
+        try {
+            SSLUtil.turnOffSslChecking();
+        } catch (NoSuchAlgorithmException e) {
+            LOG.error("", e);
+        } catch (KeyManagementException e) {
+            LOG.error("", e);
+        }
+    }
 
 
     @Cacheable("IMAGES")
     public List<ThirdPartyDto> getImagesList(){
         int totalNumber = getTotalNumber();
-        System.out.println("total number = " + totalNumber);
+        LOG.info("total number = {}",  totalNumber);
 
+        totalNumber = 10;
         List<ThirdPartyDto> list = new ArrayList<>();
         int id = 1;
         while(list.size() < totalNumber){
@@ -41,7 +54,7 @@ public class LoadImageService {
             }
             id++;
 
-            System.out.println("list size = " +list.size());
+            LOG.info("list size = {}", list.size());
         }
 
         return list;
