@@ -31,22 +31,7 @@ public class ImageProjectRestController {
             });
         }
 
-//        try {
-//            response = restTemplate.exchange(url, HttpMethod.GET, entity, responseClass);
-//        } catch (HttpStatusCodeException e) {
-//            ResponseBody responseBody = new ResponseBody();
-//            try {
-//                responseBody = new ObjectMapper().readValue(e.getResponseBodyAsByteArray(), ResponseBody.class);
-//            } catch (IOException e1) {
-//                log.warn("Unable to map response body");
-//            }
-//            log.debug("{} request to {} returned {}", "GET", responseBody.getPath(), responseBody.getStatus());
-//            log.debug("Error message: {}", responseBody.getMessage());
-//        }
-
         return list;
-        // return null;
-        //RestTemplate
     }
 
 
