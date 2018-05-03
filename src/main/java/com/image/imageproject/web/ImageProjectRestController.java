@@ -4,7 +4,6 @@ import com.image.imageproject.data.ImageDto;
 import com.image.imageproject.data.ThirdPartyDto;
 import com.image.imageproject.service.LoadImageService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,8 +14,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/my-images")
 public class ImageProjectRestController {
-    @Autowired
-    private LoadImageService imageService;
+
+    private  LoadImageService imageService;
+
+    public ImageProjectRestController (LoadImageService imageService){
+        this.imageService = imageService;
+    }
 
     @RequestMapping(method = RequestMethod.GET)
     public List<ImageDto> findAll()  {
