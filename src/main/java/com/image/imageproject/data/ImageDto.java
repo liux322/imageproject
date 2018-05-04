@@ -4,6 +4,10 @@ public class ImageDto {
     private long id;
     private String url;
 
+    public ImageDto(long id, String url){
+        this.id = id;
+        this.url = url;
+    }
     public long getId() {
         return id;
     }

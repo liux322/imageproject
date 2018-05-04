@@ -27,9 +27,7 @@ public class ImageProjectRestController {
         List<Image> result = imageService.getImagesList();
         if(!result.isEmpty()){
             result.forEach(entity -> {
-              ImageDto image = new ImageDto();
-              image.setId(entity.getId());
-              image.setUrl(entity.getImageurl());
+              ImageDto image = new ImageDto(entity.getId(), entity.getImageurl());
               list.add(image);
             });
         }

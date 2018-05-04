@@ -3,7 +3,7 @@ Commands
 
 test project
 ```bash
-gradle test
+gradle clean test jacocoTestReport
 ```
 
 run project

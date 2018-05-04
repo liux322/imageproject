@@ -58,8 +58,8 @@ public class LoadImageService {
        // List<ThirdPartyDto> list = new ArrayList<>();
         long id = 1;
         final long chunkSize = 100;
-        while(getFoundSize() < 50) {
-       // while(getFoundSize() < totalNumber){
+       // while(getFoundSize() < 50) {
+        while(getFoundSize() < totalNumber){
             LoadImageThread thread = applicationContext.getBean(LoadImageThread.class);
             thread.setStartId(id);
             thread.setEndId(id+chunkSize);
