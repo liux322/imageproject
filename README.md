@@ -34,8 +34,11 @@ Request Example
 ===============
 
 Request:
+```
+http://localhost:8080/my-images/page/?/size/?
 
-
+http://localhost:8080/my-images
+```
 
 response:
 

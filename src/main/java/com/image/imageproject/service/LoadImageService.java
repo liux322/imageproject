@@ -24,9 +24,10 @@ import java.util.List;
 
 @Service
 public class LoadImageService {
+
     private static final Logger LOG = LoggerFactory.getLogger(LoadImageService.class);
-  //  private static final String URL = "https://5ad8d1c9dc1baa0014c60c51.mockapi.io/api/br/v1/magic";
     private static final String TOTAL_URL = "http://5ad8d1c9dc1baa0014c60c51.mockapi.io/api/br/v1/magicall";
+    private static final int CHUNK_SIZE = 100;
 
 
     @Autowired
@@ -40,7 +41,7 @@ public class LoadImageService {
 
     private RestTemplate restTemplate = new RestTemplate();
 
-    public LoadImageService(){
+    public LoadImageService() {
         try {
             SSLUtil.turnOffSslChecking();
         } catch (NoSuchAlgorithmException e) {
@@ -51,33 +52,34 @@ public class LoadImageService {
     }
 
     @Cacheable("IMAGES")
-    public List<Image> getImagesList(){
-        int totalNumber = getTotalNumber();
-        System.out.println("total number = " + totalNumber);
-
-       // List<ThirdPartyDto> list = new ArrayList<>();
-        long id = 1;
-        final long chunkSize = 100;
-       // while(getFoundSize() < 50) {
-        while(getFoundSize() < totalNumber){
+    public List<Image> getImageList(int totalNumber) {
+        long startId = 1;
+        //execute multithreads from the pool to scan all images
+        while (getFoundSize() < totalNumber) {
             LoadImageThread thread = applicationContext.getBean(LoadImageThread.class);
-            thread.setStartId(id);
-            thread.setEndId(id+chunkSize);
+            thread.setStartId(startId);
+            thread.setEndId(startId + CHUNK_SIZE);
             taskExecutor.execute(thread);
-            id += chunkSize;
+            startId += CHUNK_SIZE;
         }
-
-        ((ThreadPoolTaskExecutor)taskExecutor).shutdown();
+        // stop the executor.
+        ((ThreadPoolTaskExecutor) taskExecutor).shutdown();
 
         List<Image> allImages = imageRepository.findAll();
         return allImages;
-
     }
 
 
-    private int getTotalNumber()  {
+    public List<Image> getImagesList() {
+        int totalNumber = getTotalNumber();
+        LOG.info("total number = " + totalNumber);
+        return getImageList(totalNumber);
+    }
+
+
+    public int getTotalNumber() {
         int total = 0;
-        try{
+        try {
             ResponseEntity<String> response
                     = restTemplate.getForEntity(TOTAL_URL, String.class);
             ObjectMapper mapper = new ObjectMapper();
@@ -85,16 +87,16 @@ public class LoadImageService {
             JsonNode totalNode = root.path("total");
             total = totalNode.asInt();
 
-        }catch ( Exception e){
-
+        } catch (Exception e) {
+            LOG.error("", e);
         }
         return total;
     }
 
-    private int getFoundSize(){
+    private int getFoundSize() {
         List<Image> allImages = imageRepository.findAll();
         int size = allImages.size();
-        System.out.println("the image size = " + size);
+        LOG.info("the image size = {}", size);
         return size;
     }
 
