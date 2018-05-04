@@ -1,13 +1,13 @@
 buildscript {
-    ext {
-        springBootVersion = '2.0.1.RELEASE'
-    }
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-    }
+	ext {
+		springBootVersion = '2.0.1.RELEASE'
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
 }
 
 apply plugin: 'java'
@@ -20,19 +20,27 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 1.8
 
 repositories {
-    mavenCentral()
+	mavenCentral()
 }
 
 
 dependencies {
-    compile('org.springframework.boot:spring-boot-starter-cache')
-    compile('org.springframework.boot:spring-boot-starter-web')
-    runtime('org.springframework.boot:spring-boot-devtools')
-    compileOnly('org.projectlombok:lombok')
+	compile('org.springframework.boot:spring-boot-starter-web')
+	compile('org.springframework.boot:spring-boot-starter-cache')
+	compile('org.springframework.boot:spring-boot-devtools')
+	compile('com.h2database:h2')
+	compile('org.springframework:spring-jdbc')
+	compile('org.springframework.data:spring-data-jpa')
+	compile('org.springframework.boot:spring-boot-starter-data-jpa')
+	compile('org.springframework.boot:spring-boot-starter-jdbc')
+	compile('org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final')
+	compile('org.slf4j:slf4j-api')
 
-    testCompile('org.mockito:mockito-core:1.10.19')
-    testCompile('org.springframework.boot:spring-boot-starter-test')
-    testCompile ('org.powermock:powermock-core:1.7.3')
-    testCompile ('org.powermock:powermock-api-mockito:1.7.3')
-    testCompile ('org.powermock:powermock-module-junit4:1.7.3')
+	testCompile('org.mockito:mockito-core:1.10.19')
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+	testCompile ('org.powermock:powermock-core:1.7.3')
+	testCompile ('org.powermock:powermock-api-mockito:1.7.3')
+	testCompile ('org.powermock:powermock-module-junit4:1.7.3')
+
+
 }

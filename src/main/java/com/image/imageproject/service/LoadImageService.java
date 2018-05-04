@@ -2,28 +2,41 @@ package com.image.imageproject.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.image.imageproject.data.ThirdPartyDto;
+import com.image.imageproject.repository.ImageRepository;
+import com.image.imageproject.repository.entity.Image;
 import com.image.imageproject.utils.SSLUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.List;
+
 
 @Service
 public class LoadImageService {
     private static final Logger LOG = LoggerFactory.getLogger(LoadImageService.class);
-    private static final String URL = "https://5ad8d1c9dc1baa0014c60c51.mockapi.io/api/br/v1/magic";
+  //  private static final String URL = "https://5ad8d1c9dc1baa0014c60c51.mockapi.io/api/br/v1/magic";
     private static final String TOTAL_URL = "http://5ad8d1c9dc1baa0014c60c51.mockapi.io/api/br/v1/magicall";
+
+
+    @Autowired
+    private ApplicationContext applicationContext;
+    @Autowired
+    private TaskExecutor taskExecutor;
+
+    @Autowired
+    private ImageRepository imageRepository;
+
 
     private RestTemplate restTemplate = new RestTemplate();
 
@@ -37,44 +50,30 @@ public class LoadImageService {
         }
     }
 
-
     @Cacheable("IMAGES")
-    public List<ThirdPartyDto> getImagesList(){
+    public List<Image> getImagesList(){
         int totalNumber = getTotalNumber();
-        LOG.info("total number = {}",  totalNumber);
+        System.out.println("total number = " + totalNumber);
 
-        totalNumber = 10;
-        List<ThirdPartyDto> list = new ArrayList<>();
-        int id = 1;
-        while(list.size() < totalNumber){
-            ThirdPartyDto image  = getImageForId(id);
-
-            if(image != null){
-                list.add(image);
-            }
-            id++;
-
-            LOG.info("list size = {}", list.size());
+       // List<ThirdPartyDto> list = new ArrayList<>();
+        long id = 1;
+        final long chunkSize = 100;
+        while(getFoundSize() < 50) {
+       // while(getFoundSize() < totalNumber){
+            LoadImageThread thread = applicationContext.getBean(LoadImageThread.class);
+            thread.setStartId(id);
+            thread.setEndId(id+chunkSize);
+            taskExecutor.execute(thread);
+            id += chunkSize;
         }
 
-        return list;
+        ((ThreadPoolTaskExecutor)taskExecutor).shutdown();
+
+        List<Image> allImages = imageRepository.findAll();
+        return allImages;
 
     }
 
-    private ThirdPartyDto getImageForId(int id) {
-        ThirdPartyDto image = null;
-        try {
-            System.out.println("requesting " + URL + "/" + id);
-            image = restTemplate
-                    .getForObject(URL + "/" + id, ThirdPartyDto.class);
-
-        } catch (HttpClientErrorException ex) {
-            image = null;
-        } catch (ResourceAccessException e1) {
-                LOG.warn("ResourceAccessException");
-        }
-        return image;
-    }
 
     private int getTotalNumber()  {
         int total = 0;
@@ -92,5 +91,11 @@ public class LoadImageService {
         return total;
     }
 
+    private int getFoundSize(){
+        List<Image> allImages = imageRepository.findAll();
+        int size = allImages.size();
+        System.out.println("the image size = " + size);
+        return size;
+    }
 
 }

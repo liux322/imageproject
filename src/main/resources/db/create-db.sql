@@ -1,0 +1,4 @@
+CREATE TABLE image (
+  id        BIGINT PRIMARY KEY NOT NULL,
+  imageurl VARCHAR(255) NOT NULL
+);

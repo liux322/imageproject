@@ -1,45 +1,75 @@
-# imageproject
+Commands
+========
 
-# Response sample
-[
+test project
+```bash
+gradle test
+```
+
+run project
+```bash
+gradle bootRun
+```
+
+Fast Application Restarts
+-------------------------
+
+See https://docs.spring.io/spring-boot/docs/current/reference/html/howto-hotswapping.html for reference
+
+in one terminal type 
+```bash
+gradle bootRun
+```
+
+in another
+```bash
+gradle -t compileJava
+```
+
+
+On every code change the project is going to be recompiled and server restarted automatically.
+
+
+Request Example
+===============
+
+Request:
+
+
+
+response:
+
+```
+{
+  [
     {
-        "id": 1,
-        "url": "https://unsplash.it/500?image=1"
+      "id": 11,
+      "url":"https://unsplash.it/500?image=11"
     },
     {
-        "id": 2,
-        "url": "https://unsplash.it/500?image=2"
+      "id": 12,
+      "url":"https://unsplash.it/500?image=11"
     },
     {
-        "id": 3,
-        "url": "https://unsplash.it/500?image=3"
+      "id": 13,
+      "url":"https://unsplash.it/500?image=11"
     },
     {
-        "id": 4,
-        "url": "https://unsplash.it/500?image=4"
+      "id": 14,
+      "url":"https://unsplash.it/500?image=11"
     },
     {
-        "id": 5,
-        "url": "https://unsplash.it/500?image=5"
-    },
-    {
-        "id": 6,
-        "url": "https://unsplash.it/500?image=6"
-    },
-    {
-        "id": 7,
-        "url": "https://unsplash.it/500?image=7"
-    },
-    {
-        "id": 8,
-        "url": "https://unsplash.it/500?image=8"
-    },
-    {
-        "id": 9,
-        "url": "https://unsplash.it/500?image=9"
-    },
-    {
-        "id": 10,
-        "url": "https://unsplash.it/500?image=10"
+      "id": 15,
+      "url":"https://unsplash.it/500?image=11"
     }
-]
+  ]
+}
+
+```
+
+Use case
+========
+
+
+
+
