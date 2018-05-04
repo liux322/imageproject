@@ -9,7 +9,7 @@ import com.image.imageproject.utils.SSLUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 
 @Service
@@ -51,7 +52,7 @@ public class LoadImageService {
         }
     }
 
-    @Cacheable("IMAGES")
+    @CachePut("IMAGES_CACHE")
     public List<Image> getImageList(int totalNumber) {
         long startId = 1;
         //execute multithreads from the pool to scan all images
@@ -63,7 +64,8 @@ public class LoadImageService {
             startId += CHUNK_SIZE;
         }
         // stop the executor.
-        ((ThreadPoolTaskExecutor) taskExecutor).shutdown();
+        ((ThreadPoolTaskExecutor) taskExecutor).getThreadPoolExecutor().setKeepAliveTime(1, TimeUnit.MINUTES);
+ //       ((ThreadPoolTaskExecutor) taskExecutor).shutdown();
 
         List<Image> allImages = imageRepository.findAll();
         return allImages;
